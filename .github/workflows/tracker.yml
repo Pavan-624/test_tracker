@@ -23,6 +23,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Install GeckoDriver
+      run: |
+        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.tag_name')
+        wget "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
+        tar -xzf geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin/
+        geckodriver --version  # Verify installation
+
     - name: Run price tracker script
       run: python price_tracker.py
       env:

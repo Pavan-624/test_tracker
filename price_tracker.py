@@ -17,7 +17,7 @@ options = Options()
 # options.add_argument('--headless')
 
 # Setup GeckoDriver service
-service = Service(executable_path='/usr/local/bin/geckodriver')  # Path for Linux
+service = Service(executable_path='/usr/local/bin/geckodriver')  # Correct path for Linux in GitHub Actions
 
 # Initialize the Firefox WebDriver
 driver = webdriver.Firefox(service=service, options=options)
