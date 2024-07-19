@@ -26,22 +26,30 @@ jobs:
         sudo apt-get install -y google-chrome-stable
 
     - name: Check Chrome Version
-      run: |
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-        echo "Chrome Version: $CHROME_VERSION"
-        echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
+  run: |
+    CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+    echo "Chrome Version: $CHROME_VERSION"
+    CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+    echo "Chrome Major Version: $CHROME_MAJOR_VERSION"
+    echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
+    echo "CHROME_MAJOR_VERSION=$CHROME_MAJOR_VERSION" >> $GITHUB_ENV
 
-    - name: Install ChromeDriver
-      run: |
-        CHROME_VERSION=$(echo $CHROME_VERSION)
-        CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION")
-        echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
-        wget -N "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        unzip chromedriver_linux64.zip -d $HOME/bin
-        rm chromedriver_linux64.zip
-        chmod +x $HOME/bin/chromedriver
-        export PATH=$HOME/bin:$PATH
+- name: Install ChromeDriver
+  run: |
+    CHROME_MAJOR_VERSION=$(echo $CHROME_MAJOR_VERSION)
+    echo "Using Major Version: $CHROME_MAJOR_VERSION"
+    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION")
+    echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
+    if [ -z "$CHROMEDRIVER_VERSION" ]; then
+      echo "Failed to get ChromeDriver version"
+      exit 1
+    fi
+    wget -N "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+    unzip chromedriver_linux64.zip -d $HOME/bin
+    rm chromedriver_linux64.zip
+    chmod +x $HOME/bin/chromedriver
+    export PATH=$HOME/bin:$PATH
+
 
     - name: Set environment variables from JSON
       run: |
