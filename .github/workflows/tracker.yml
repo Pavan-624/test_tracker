@@ -34,6 +34,9 @@ jobs:
         sudo mv geckodriver /usr/local/bin/
         geckodriver --version  # Verify installation
 
+    - name: Install Firefox
+      run: sudo apt-get install -y firefox
+
     - name: Run price tracker script
       run: python price_tracker.py
       env:
