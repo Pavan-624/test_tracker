@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 
 # Get the secret data from the environment variable
@@ -52,7 +53,9 @@ if env_data:
 
     # Initialize WebDriver with webdriver_manager
     try:
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        # Initialize ChromeDriver
+        chrome_service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=chrome_service)
         
         # Your Selenium code here (e.g., open a webpage, scrape data, etc.)
         driver.get("https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6")
