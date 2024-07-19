@@ -38,7 +38,11 @@ jobs:
       run: |
         CHROME_MAJOR_VERSION=$(echo $CHROME_MAJOR_VERSION)
         echo "Using Major Version: $CHROME_MAJOR_VERSION"
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION")
+        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || echo "latest")
+        if [ "$CHROMEDRIVER_VERSION" == "latest" ]; then
+          echo "Failed to get ChromeDriver version, using latest version"
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+        fi
         echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
         if [ -z "$CHROMEDRIVER_VERSION" ]; then
           echo "Failed to get ChromeDriver version"
