@@ -40,11 +40,15 @@ except Exception as e:
 # Add a delay before initializing the WebDriver
 time.sleep(5)
 
-# Initialize the Firefox WebDriver
+# Initialize the Firefox WebDriver with detailed debugging
 try:
     driver = webdriver.Firefox(service=service, options=options)
     print("Successfully initialized Firefox WebDriver")
 except Exception as e:
+    print(f"Failed to initialize Firefox WebDriver: {e}")
+    print("Additional debug info:")
+    print(f"Service path: {service.path}")
+    print(f"Options arguments: {options.arguments}")
     raise RuntimeError(f"Failed to initialize Firefox WebDriver: {e}")
 
 # Example of your automation task
