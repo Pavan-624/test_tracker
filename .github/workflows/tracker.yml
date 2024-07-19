@@ -1,4 +1,4 @@
-name: CI Workflow
+name: CI
 
 on: [push]
 
@@ -13,30 +13,22 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.12
+        python-version: '3.12.4'
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt  # If you have a requirements file
-        pip install selenium            # Explicitly install selenium
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
     - name: Install GeckoDriver
       run: |
-        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | sed 's/v//')
-        wget https://github.com/mozilla/geckodriver/releases/download/v$GECKODRIVER_VERSION/geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
-        tar -xzf geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
+        wget https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz
+        tar -xzf geckodriver-v0.34.0-linux64.tar.gz
         sudo mv geckodriver /usr/local/bin/
-        rm geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
+        sudo chmod +x /usr/local/bin/geckodriver
 
-    - name: Verify GeckoDriver Installation
+    - name: Run tests
       run: |
-        if command -v geckodriver > /dev/null; then
-          echo "GeckoDriver is installed and available in PATH."
-          geckodriver --version
-        else
-          echo "GeckoDriver is not available in PATH."
-          exit 1
-        fi
-
-    - name: Run Python script
-      run: python price_tracker.py
+        python price_tracker.py
+      env:
+        ENV_DATA: ${{ secrets.env }}  # Use the secret named 'env'
