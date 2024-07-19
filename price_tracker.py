@@ -15,17 +15,22 @@ options = Options()
 # Setup GeckoDriver service
 service = Service(executable_path='/usr/local/bin/geckodriver')  # Path for Linux
 
-# Initialize the Firefox WebDriver
-driver = webdriver.Firefox(service=service, options=options)
+try:
+    # Initialize the Firefox WebDriver
+    driver = webdriver.Firefox(service=service, options=options)
 
-# Use the driver for your automation tasks
-driver.get("https://www.amazon.in/s?k=iphone+15")
+    # Use the driver for your automation tasks
+    driver.get("https://www.amazon.in/s?k=iphone+15")
 
-# Example of using email settings from config
-from_email = config["FROM_EMAIL"]
-to_email = config["TO_EMAIL"]
-email_password = config["EMAIL_PASSWORD"]
+    # Example of using email settings from config
+    from_email = config["FROM_EMAIL"]
+    to_email = config["TO_EMAIL"]
+    email_password = config["EMAIL_PASSWORD"]
 
-# Your email sending code here
+    # Your email sending code here
 
-driver.quit()
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+finally:
+    driver.quit()
