@@ -1,4 +1,4 @@
-name: Run Python Application
+name: Run Selenium Tests
 
 on: [push]
 
@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -20,17 +20,31 @@ jobs:
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Install Firefox and GeckoDriver
+    - name: Install GeckoDriver
       run: |
-        sudo apt-get update
-        sudo apt-get install -y firefox
+        # Fetch the latest version of GeckoDriver
         GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
-        wget -N https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        # Download GeckoDriver
+        wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        # Extract the GeckoDriver binary
         tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        # Move GeckoDriver to a directory in PATH
         sudo mv geckodriver /usr/local/bin/
+        # Clean up
         rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
+    - name: Verify GeckoDriver Installation
+      run: |
+        if [ -f /usr/local/bin/geckodriver ]; then
+          echo "GeckoDriver is installed at /usr/local/bin/geckodriver"
+          geckodriver --version
+        else
+          echo "GeckoDriver is not found at /usr/local/bin/geckodriver"
+          exit 1
+        fi
+
     - name: Run Python script
-      run: python price_tracker.py
+      run: |
+        python price_tracker.py
       env:
-        ENV_DATA: ${{ secrets.ENV }}  # Use the secret named 'ENV'
+        ENV_DATA: ${{ secrets.env }}
