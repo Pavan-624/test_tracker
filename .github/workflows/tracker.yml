@@ -1,34 +1,36 @@
-name: Price Tracker
+name: Python application
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Runs every hour
+  push:
+    branches:
+      - main  # or your default branch
+  pull_request:
+    branches:
+      - main  # or your default branch
 
 jobs:
-  run-price-tracker:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: 3.7
 
     - name: Install dependencies
       run: |
-        python -m venv venv
-        . venv/bin/activate
-        pip install selenium beautifulsoup4
-        pip install urllib3==1.26.16
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Set environment variables
+    - name: Run script
+      run: |
+        python price_tracker.py
       env:
         FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         TO_EMAIL: ${{ secrets.TO_EMAIL }}
-      run: |
-        . venv/bin/activate
-        python price_tracker.py
