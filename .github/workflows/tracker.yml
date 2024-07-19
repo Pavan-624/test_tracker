@@ -23,16 +23,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Install jq (for parsing JSON)
-      run: sudo apt-get install -y jq
-
     - name: Install GeckoDriver
       run: |
         GECKODRIVER_VERSION=0.34.0
         wget "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
         tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
         sudo mv geckodriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/geckodriver  # Ensure executable permissions
         geckodriver --version  # Verify installation
 
     - name: Install Firefox
