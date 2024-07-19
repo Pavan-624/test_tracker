@@ -1,94 +1,68 @@
 import os
 import json
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import time
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
-# Fetch environment variables
-env_vars = os.getenv('ENV')
-secrets = json.loads(env_vars)
-from_email = secrets['FROM_EMAIL']
-from_password = secrets['EMAIL_PASSWORD']
-to_email = secrets['TO_EMAIL']
+# Get the secret data from the environment variable
+env_data = os.getenv('ENV_DATA')
 
-# SMTP server configuration
-smtp_server = 'smtp.gmail.com'
-smtp_port = 587
+if env_data:
+    # Parse the JSON string
+    secrets = json.loads(env_data)
 
-# URL and threshold for a single product
-product = {
-    "url": "https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6",
-    "threshold": 15000.0
-}
+    # Extract individual values
+    from_email = secrets.get('FROM_EMAIL')
+    email_password = secrets.get('EMAIL_PASSWORD')
+    to_email = secrets.get('TO_EMAIL')
 
-def send_email(subject, body, to_email):
-    msg = MIMEMultipart()
-    msg['From'] = from_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
-    
+    # Use these values to send an email
+    print(f"From Email: {from_email}")
+    print(f"To Email: {to_email}")
+
+    # Email content
+    subject = "Test Email from GitHub Actions"
+    body = "This is a test email sent from a GitHub Actions workflow."
+
+    # Setup the MIME
+    message = MIMEMultipart()
+    message['From'] = from_email
+    message['To'] = to_email
+    message['Subject'] = subject
+    message.attach(MIMEText(body, 'plain'))
+
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(from_email, from_password)
-            server.send_message(msg)
-            print(f"Email sent to {to_email}")
-    except Exception as e:
-        print(f"An error occurred while sending email: {e}")
-
-def fetch_data():
-    driver = None
-    try:
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Run in headless mode
-
-        # Initialize the Chrome WebDriver
-        driver = webdriver.Chrome(service=Service(r'C:\Users\Pavan\Downloads\chromedriver-win64 (1)\chromedriver-win64\chromedriver.exe'), options=chrome_options)
+        # Connect to the email server
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()  # Secure the connection
+        server.login(from_email, email_password)
         
-        delay_time = 10  # Fixed delay time in seconds
-
-        # Process a single product
-        driver.get(product["url"])
-        time.sleep(delay_time)  # Use fixed delay time
-
-        page_source = driver.page_source
-        soup = BeautifulSoup(page_source, 'html.parser')
-
-        # Adjust these selectors based on actual HTML structure
-        name_tag = soup.find('span', class_='a-size-large product-title-word-break')
-        name = name_tag.text.strip() if name_tag else 'N/A'
-        print(f"Product Name: {name}")
-
-        price_tag = soup.find('span', class_='a-price-whole')
-        price = price_tag.text.strip().replace(',', '') if price_tag else 'N/A'
-        print(f"Product Price: {price}")
-
-        if price != 'N/A':
-            price = float(price)
-            print(f"Fetched Price: {price}")
-
-            # Always send an email if the price is below the threshold
-            if price <= product["threshold"]:
-                print(f'Price is below threshold for {name}: {price}')
-                send_email(
-                    'Price Drop Alert!',
-                    f'The price of {name} has dropped to {price}.',
-                    to_email
-                )
-        else:
-            print("Price data not available.")
-
+        # Send the email
+        text = message.as_string()
+        server.sendmail(from_email, to_email, text)
+        print("Email sent successfully")
+        
+        # Disconnect from the server
+        server.quit()
     except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        if driver:
-            driver.quit()
+        print(f"Failed to send email: {e}")
 
-if __name__ == "__main__":
-    fetch_data()
+    # Initialize WebDriver with webdriver_manager
+    try:
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        
+        # Your Selenium code here (e.g., open a webpage, scrape data, etc.)
+        driver.get("https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6")
+        # Example: Extract the price
+        price_element = driver.find_element_by_id("priceblock_ourprice")
+        price = price_element.text
+        print(f"Price: {price}")
+        
+        driver.quit()
+    except Exception as e:
+        print(f"An error occurred with WebDriver: {e}")
+
+else:
+    print("No environment data found.")
