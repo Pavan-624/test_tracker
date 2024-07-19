@@ -1,6 +1,9 @@
-name: Run Selenium Tests
+name: Run Price Tracker
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -8,32 +11,22 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Install Python
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'
+        python-version: 3.12
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
-        pip install selenium
-        sudo apt-get update
-        sudo apt-get install -y firefox
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Install GeckoDriver
-      run: |
-        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
-        wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-        tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-        sudo mv geckodriver /usr/local/bin/
-        geckodriver --version
+    - name: Set environment variables
+      run: echo "ENV_DATA=${{ secrets.ENV_DATA }}" >> $GITHUB_ENV
 
-    - name: Check Firefox Version
-      run: firefox --version
-
-    - name: Check Selenium Version
-      run: python -c "import selenium; print(selenium.__version__)"
-
-    - name: Run Tests
+    - name: Run price tracker script
       run: python price_tracker.py
+      env:
+        ENV_DATA: ${{ secrets.ENV_DATA }}
