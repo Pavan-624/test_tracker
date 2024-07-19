@@ -1,11 +1,15 @@
+import os
 import json
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 
-# Load configuration from JSON file
-with open('config.json') as f:
-    config = json.load(f)
+# Load configuration from ENV_DATA environment variable
+env_data = os.getenv('ENV_DATA')
+if not env_data:
+    raise ValueError("ENV_DATA environment variable not set")
+
+config = json.loads(env_data)
 
 # Setup Firefox options
 options = Options()
@@ -13,7 +17,7 @@ options = Options()
 # options.add_argument('--headless')
 
 # Setup GeckoDriver service
-service = Service(executable_path=r'C:\Users\Pavan\Downloads\geckodriver-v0.34.0-win64\gekodriver.exe')  # Update with correct path if needed
+service = Service(executable_path=r'C:\Users\Pavan\Downloads\geckodriver-v0.34.0-win64\gekodriver.exe')  # Path for Linux
 
 # Initialize the Firefox WebDriver
 driver = webdriver.Firefox(service=service, options=options)
@@ -29,4 +33,4 @@ email_password = config["EMAIL_PASSWORD"]
 # Your email sending code here
 
 driver.quit()
-#chnaged
+
