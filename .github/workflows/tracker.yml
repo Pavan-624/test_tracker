@@ -1,12 +1,12 @@
-name: Python application
+name: Test Secrets
 
 on:
   push:
     branches:
-      - main  # or 'master', depending on your branch name
+      - main  # Change to 'master' if that’s your default branch
 
 jobs:
-  build:
+  test-secrets:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,26 +21,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
 
-    - name: Install ChromeDriver
-      run: |
-        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
-        wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/chromedriver
-        sudo chmod +x /usr/local/bin/chromedriver
-
-    - name: Install Google Chrome
-      run: |
-        sudo apt update
-        sudo apt install -y wget
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo apt install -y ./google-chrome-stable_current_amd64.deb
-
-    - name: Run script with hardcoded credentials
-      run: python price_tracker.py
+    - name: Run test secrets script
+      run: python test_secrets.py
       env:
-        FROM_EMAIL: "pavanthatikonda2235@gmail.com"
-        EMAIL_PASSWORD: "nyvu pohv vqdn tzdx"
-        TO_EMAIL: "thatikondapavan26@gmail.com"
+        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        TO_EMAIL: ${{ secrets.TO_EMAIL }}
