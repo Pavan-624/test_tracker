@@ -23,6 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Install jq (for parsing JSON)
+      run: sudo apt-get install -y jq
+
     - name: Install GeckoDriver
       run: |
         GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.tag_name')
