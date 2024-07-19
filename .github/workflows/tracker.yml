@@ -1,12 +1,6 @@
 name: Python application
 
-on:
-  push:
-    branches:
-      - main  # or your default branch
-  pull_request:
-    branches:
-      - main  # or your default branch
+on: [push]
 
 jobs:
   build:
@@ -14,21 +8,41 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v4
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.12
+        python-version: '3.12.4'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install toml==0.10.1
-        pip install packaging==23.0
+        pip install selenium
 
-    - name: Run script
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+
+    - name: Install ChromeDriver
+      run: |
+        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+        wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip -d $HOME/bin
+        rm chromedriver_linux64.zip
+        chmod +x $HOME/bin/chromedriver
+        export PATH=$HOME/bin:$PATH
+
+    - name: Set environment variables from JSON
+      run: |
+        FROM_EMAIL=$(jq -r '.FROM_EMAIL' config.json)
+        EMAIL_PASSWORD=$(jq -r '.EMAIL_PASSWORD' config.json)
+        TO_EMAIL=$(jq -r '.TO_EMAIL' config.json)
+        echo "FROM_EMAIL=$FROM_EMAIL" >> $GITHUB_ENV
+        echo "EMAIL_PASSWORD=$EMAIL_PASSWORD" >> $GITHUB_ENV
+        echo "TO_EMAIL=$TO_EMAIL" >> $GITHUB_ENV
+
+    - name: Run price_tracker.py
       run: python price_tracker.py
-      env:
-        ENV: ${{ secrets.env }}  # Correctly use the secret named 'env'
