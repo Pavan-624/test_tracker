@@ -8,7 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 # Get the secret data from the environment variable
-env_data = os.getenv('ENV_DATA')
+env_data = os.getenv('ENV')
 
 if env_data:
     # Parse the JSON string
