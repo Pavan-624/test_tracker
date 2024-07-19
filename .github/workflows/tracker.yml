@@ -3,7 +3,7 @@ name: Test Secrets
 on:
   push:
     branches:
-      - main  # Change to 'master' if that’s your default branch
+      - main
 
 jobs:
   test-secrets:
@@ -25,6 +25,4 @@ jobs:
     - name: Run test secrets script
       run: python price_tracker.py
       env:
-        FROM_EMAIL: ${{ env.FROM_EMAIL }}
-        EMAIL_PASSWORD: ${{ env.EMAIL_PASSWORD }}
-        TO_EMAIL: ${{ env.TO_EMAIL }}
+        ENV_DATA: ${{ secrets.env }}  # Use the secret named 'env'

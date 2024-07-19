@@ -1,14 +1,21 @@
 import os
+import json
 
-def main():
-    from_email = os.getenv('FROM_EMAIL')
-    email_password = os.getenv('EMAIL_PASSWORD')
-    to_email = os.getenv('TO_EMAIL')
+# Get the secret data from the environment variable
+env_data = os.getenv('ENV_DATA')
 
-    print(f"FROM_EMAIL: {from_email}")
-    print(f"EMAIL_PASSWORD: {email_password}")
-    print(f"TO_EMAIL: {to_email}")
+if env_data:
+    # Parse the JSON string
+    secrets = json.loads(env_data)
 
-if __name__ == "__main__":
-    main()
-#chnaged
+    # Extract individual values
+    from_email = secrets.get('FROM_EMAIL')
+    email_password = secrets.get('EMAIL_PASSWORD')
+    to_email = secrets.get('TO_EMAIL')
+
+    # Use these values as needed
+    print(f"From Email: {from_email}")
+    print(f"To Email: {to_email}")
+
+else:
+    print("No environment data found.")
