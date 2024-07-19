@@ -17,9 +17,14 @@ options.add_argument('--headless')  # Run in headless mode
 # Setup GeckoDriver service
 service = Service(executable_path='/usr/local/bin/geckodriver')  # Path for Linux
 
+# Debugging information
+print(f"Using GeckoDriver at: {service.executable_path}")
+print(f"Firefox options: {options.arguments}")
+
 # Initialize the Firefox WebDriver
 try:
     driver = webdriver.Firefox(service=service, options=options)
+    print("Successfully initialized Firefox WebDriver")
 except Exception as e:
     raise RuntimeError(f"Failed to initialize Firefox WebDriver: {e}")
 
