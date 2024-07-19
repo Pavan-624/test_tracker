@@ -1,19 +1,22 @@
-name: Test Secrets
+name: Python application
 
 on:
   push:
     branches:
-      - main
+      - main  # or your default branch
+  pull_request:
+    branches:
+      - main  # or your default branch
 
 jobs:
-  test-secrets:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: Set up Python 3.7
       uses: actions/setup-python@v4
       with:
         python-version: 3.7
@@ -21,8 +24,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Run test secrets script
+    - name: Run script
       run: python price_tracker.py
       env:
-        ENV_DATA: ${{ secrets.env }}  # Use the secret named 'env'
+        ENV: ${{ secrets.env }}
