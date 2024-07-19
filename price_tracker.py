@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
 
 # Get the secret data from the environment variable
 env_data = os.getenv('ENV_DATA')
@@ -55,10 +56,15 @@ if env_data:
         
         # Your Selenium code here (e.g., open a webpage, scrape data, etc.)
         driver.get("https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6")
-        # Example: Extract the price
-        price_element = driver.find_element_by_id("priceblock_ourprice")
-        price = price_element.text
-        print(f"Price: {price}")
+        
+        # Get the page source and parse it with BeautifulSoup
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'html.parser')
+        
+        # Extract the price using BeautifulSoup
+        price_tag = soup.find('span', class_='a-price-whole')
+        price = price_tag.text.strip().replace(',', '') if price_tag else 'N/A'
+        print(f"Product Price: {price}")
         
         driver.quit()
     except Exception as e:
