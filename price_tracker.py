@@ -13,7 +13,7 @@ options = Options()
 # options.add_argument('--headless')
 
 # Setup GeckoDriver service
-service = Service(executable_path='C:\Users\Pavan\Downloads\geckodriver-v0.34.0-win64\gekodriver.exe')  # Update with correct path if needed
+service = Service(executable_path=r'C:\Users\Pavan\Downloads\geckodriver-v0.34.0-win64\gekodriver.exe')  # Update with correct path if needed
 
 # Initialize the Firefox WebDriver
 driver = webdriver.Firefox(service=service, options=options)
