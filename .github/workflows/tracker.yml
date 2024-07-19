@@ -22,19 +22,19 @@ jobs:
 
     - name: Install GeckoDriver
       run: |
-        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
-        wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-        tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | sed 's/v//')
+        wget https://github.com/mozilla/geckodriver/releases/download/v$GECKODRIVER_VERSION/geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
+        tar -xzf geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
         sudo mv geckodriver /usr/local/bin/
-        rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        rm geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz
 
     - name: Verify GeckoDriver Installation
       run: |
-        if [ -f /usr/local/bin/geckodriver ]; then
-          echo "GeckoDriver is installed at /usr/local/bin/geckodriver"
+        if command -v geckodriver > /dev/null; then
+          echo "GeckoDriver is installed and available in PATH."
           geckodriver --version
         else
-          echo "GeckoDriver is not found at /usr/local/bin/geckodriver"
+          echo "GeckoDriver is not available in PATH."
           exit 1
         fi
 
