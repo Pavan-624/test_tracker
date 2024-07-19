@@ -1,4 +1,4 @@
-name: Python application
+name: Run Python Application
 
 on: [push]
 
@@ -20,37 +20,17 @@ jobs:
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Install Firefox
+    - name: Install Firefox and GeckoDriver
       run: |
         sudo apt-get update
         sudo apt-get install -y firefox
-
-    - name: Install GeckoDriver
-      run: |
         GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
-        echo "GeckoDriver Version: $GECKODRIVER_VERSION"
-        wget "https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
+        wget -N https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
         tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
         sudo mv geckodriver /usr/local/bin/
         rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
-    - name: Check for config.json
-      run: |
-        if [ -f config.json ]; then
-          echo "config.json found."
-        else
-          echo "config.json not found."
-          exit 1
-        fi
-
-    - name: Upload JSON config
-      uses: actions/upload-artifact@v3
-      with:
-        name: config
-        path: config.json
-        if-no-files-found: warn
-
-    - name: Run price_tracker.py
+    - name: Run Python script
       run: python price_tracker.py
       env:
-        ENV: ${{ secrets.env }}
+        ENV_DATA: ${{ secrets.ENV }}  # Use the secret named 'ENV'
