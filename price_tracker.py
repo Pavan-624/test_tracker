@@ -17,7 +17,7 @@ service = Service(executable_path='/usr/local/bin/geckodriver')  # Path for Linu
 # Initialize the Firefox WebDriver
 driver = webdriver.Firefox(service=service, options=options)
 
-# Use the driver for your automation tasks
+# Example of your automation task
 driver.get("https://www.amazon.in/s?k=iphone+15")
 
 # Example of using email settings from config
