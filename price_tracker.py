@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
@@ -21,6 +22,23 @@ service = Service(executable_path=geckodriver_path)
 # Debugging information
 print(f"Using GeckoDriver at: {geckodriver_path}")
 print(f"Firefox options: {options.arguments}")
+
+# Verify GeckoDriver version
+try:
+    geckodriver_version = os.popen(f"{geckodriver_path} --version").read()
+    print(f"GeckoDriver version: {geckodriver_version}")
+except Exception as e:
+    print(f"Failed to get GeckoDriver version: {e}")
+
+# Verify Firefox version
+try:
+    firefox_version = os.popen("firefox --version").read()
+    print(f"Firefox version: {firefox_version}")
+except Exception as e:
+    print(f"Failed to get Firefox version: {e}")
+
+# Add a delay before initializing the WebDriver
+time.sleep(5)
 
 # Initialize the Firefox WebDriver
 try:
