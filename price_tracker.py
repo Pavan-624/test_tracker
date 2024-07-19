@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Define path for GeckoDriver
-geckodriver_path = r'C:\Users\Pavan\Downloads\geckodriver-v0.34.0-win64\geckodriver.exe'  # Adjust this path if needed
+geckodriver_path = '/usr/local/bin/geckodriver'
 
 # Set up Firefox options
 options = Options()
