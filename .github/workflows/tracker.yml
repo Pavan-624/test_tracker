@@ -1,4 +1,4 @@
-name: Run Selenium Tests
+name: Test Tracker
 
 on: [push]
 
@@ -11,26 +11,21 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.12.4'
+        python-version: 3.12
 
-    - name: Install dependencies
+    - name: Install Firefox
       run: |
-        python -m pip install --upgrade pip
-        pip install selenium
+        sudo apt-get update
+        sudo apt-get install -y firefox
 
     - name: Install GeckoDriver
       run: |
-        # Fetch the latest version of GeckoDriver
         GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
-        # Download GeckoDriver
         wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-        # Extract the GeckoDriver binary
         tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-        # Move GeckoDriver to a directory in PATH
         sudo mv geckodriver /usr/local/bin/
-        # Clean up
         rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
     - name: Verify GeckoDriver Installation
@@ -42,6 +37,10 @@ jobs:
           echo "GeckoDriver is not found at /usr/local/bin/geckodriver"
           exit 1
         fi
+
+    - name: Verify Firefox Installation
+      run: |
+        firefox --version
 
     - name: Run Python script
       run: |
