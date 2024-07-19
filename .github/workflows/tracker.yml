@@ -1,12 +1,12 @@
-name: Price Tracker
+name: Python application
 
 on:
   push:
     branches:
-      - main  # Adjust if your default branch is named differently
+      - main  # or 'master', depending on your branch name
 
 jobs:
-  run-script:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run price tracker script with hardcoded credentials
+    - name: Run script with hardcoded credentials
       run: python price_tracker.py
       env:
         FROM_EMAIL: "pavanthatikonda2235@gmail.com"
