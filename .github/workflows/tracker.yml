@@ -44,6 +44,9 @@ jobs:
         which firefox
         firefox --version
 
+    - name: Set environment variable
+      run: echo "ENV_DATA=${{ secrets.ENV_DATA }}" >> $GITHUB_ENV
+
     - name: Run price tracker script
       run: python price_tracker.py
       env:
