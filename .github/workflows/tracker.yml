@@ -18,45 +18,28 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install selenium jq
+        pip install selenium
 
-    - name: Install Chrome
+    - name: Install Firefox
       run: |
         sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+        sudo apt-get install -y firefox
 
-    - name: Check Chrome Version
+    - name: Install GeckoDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-        echo "Chrome Version: $CHROME_VERSION"
-        CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
-        echo "Chrome Major Version: $CHROME_MAJOR_VERSION"
-        echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
-        echo "CHROME_MAJOR_VERSION=$CHROME_MAJOR_VERSION" >> $GITHUB_ENV
+        GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
+        wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin/
+        rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
-    - name: Install ChromeDriver
-      run: |
-        CHROME_MAJOR_VERSION=$(echo $CHROME_MAJOR_VERSION)
-        echo "Using Major Version: $CHROME_MAJOR_VERSION"
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || echo "latest")
-        if [ "$CHROMEDRIVER_VERSION" == "latest" ]; then
-          echo "Failed to get ChromeDriver version, using latest version"
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-        fi
-        echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
-        if [ -z "$CHROMEDRIVER_VERSION" ]; then
-          echo "Failed to get ChromeDriver version"
-          exit 1
-        fi
-        wget -N "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        unzip chromedriver_linux64.zip -d $HOME/bin
-        rm chromedriver_linux64.zip
-        chmod +x $HOME/bin/chromedriver
-        export PATH=$HOME/bin:$PATH
+    - name: Upload JSON config
+      uses: actions/upload-artifact@v3
+      with:
+        name: config
+        path: config.json
 
     - name: Run price_tracker.py
       run: python price_tracker.py
       env:
-        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        ENV: ${{ secrets.env }}
