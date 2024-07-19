@@ -3,21 +3,17 @@ name: Python application
 on:
   push:
     branches:
-      - main  # or your default branch
-  pull_request:
-    branches:
-      - main  # or your default branch
+      - master  # or 'main', depending on your branch name
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python 3.7
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.7
@@ -27,10 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run script
-      run: |
-        python price_tracker.py
+    - name: Run script with hardcoded credentials
+      run: python price_tracker.py
       env:
-        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        FROM_EMAIL: "pavanthatikonda2235@gmail.com"
+        EMAIL_PASSWORD: "nyvu pohv vqdn tzdx"
+        TO_EMAIL: "thatikondapavan26@gmail.com"
