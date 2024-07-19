@@ -25,6 +25,6 @@ jobs:
     - name: Run test secrets script
       run: python price_tracker.py
       env:
-        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        FROM_EMAIL: ${{ env.FROM_EMAIL }}
+        EMAIL_PASSWORD: ${{ env.EMAIL_PASSWORD }}
+        TO_EMAIL: ${{ env.TO_EMAIL }}
