@@ -16,7 +16,7 @@ if env_data:
     print("Loaded environment variables")
 
 # Define path for GeckoDriver on GitHub Actions (Linux path)
-geckodriver_path = '/usr/local/bin/geckodriver'
+geckodriver_path = '/snap/bin/geckodriver'
 
 # Set up Firefox options
 options = Options()
