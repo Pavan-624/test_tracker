@@ -7,12 +7,20 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 import json
 
+# Load environment variables
+env_data = os.getenv('ENV_DATA')
+
+# Optionally load other environment variables if needed
+if env_data:
+    env_vars = json.loads(env_data)
+    print("Loaded environment variables")
+
 # Define path for GeckoDriver on GitHub Actions (Linux path)
 geckodriver_path = '/usr/local/bin/geckodriver'
 
 # Set up Firefox options
 options = Options()
-# options.add_argument('--headless')  # Uncomment if you need headless mode
+options.add_argument('--headless')  # Uncomment if you need headless mode
 
 # Set up Firefox service
 service = Service(executable_path=geckodriver_path)
