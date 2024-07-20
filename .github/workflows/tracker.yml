@@ -25,10 +25,14 @@ jobs:
 
     - name: Install GeckoDriver
       run: |
-        sudo snap install geckodriver --channel=latest/stable --classic
+        GECKODRIVER_VERSION=0.34.0
+        wget "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
+        tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin/
+        geckodriver --version  # Verify installation
 
     - name: Install Firefox
-      run: sudo snap install firefox --channel=latest/stable
+      run: sudo apt-get install -y firefox
 
     - name: Debug information
       run: |
