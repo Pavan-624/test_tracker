@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import time
 
 # Load environment variables
@@ -19,10 +22,29 @@ from_email = env_vars.get('FROM_EMAIL', '')
 from_password = env_vars.get('EMAIL_PASSWORD', '')
 to_email = env_vars.get('TO_EMAIL', '')
 
+smtp_server = 'smtp.gmail.com'
+smtp_port = 587
+
 product = {
     "url": "https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6",
     "threshold": 141489.0
 }
+
+def send_email(subject, body, to_email):
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+    
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(from_email, from_password)
+            server.send_message(msg)
+            print(f"Email sent to {to_email}")
+    except Exception as e:
+        print(f"An error occurred while sending email: {e}")
 
 def fetch_data():
     driver = None
@@ -59,7 +81,11 @@ def fetch_data():
 
             if price <= product["threshold"]:
                 print(f'Price is below threshold for {name}: {price}')
-                # Removed email functionality
+                send_email(
+                    'Price Drop Alert!',
+                    f'The price of {name} has dropped to {price}.',
+                    to_email
+                )
         else:
             print("Price data not available.")
 
