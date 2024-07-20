@@ -9,12 +9,18 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import time
 
-# Fetch secrets from environment variables
-secrets = json.loads(os.getenv('ENV_DATA'))
+# Load environment variables
+env_data = os.getenv('ENV_DATA')
 
-from_email = secrets['FROM_EMAIL']
-from_password = secrets['EMAIL_PASSWORD']
-to_email = secrets['TO_EMAIL']
+# Optionally load other environment variables if needed
+if env_data:
+    env_vars = json.loads(env_data)
+    print("Loaded environment variables")
+
+# Fetch secrets from environment variables
+from_email = env_vars['FROM_EMAIL']
+from_password = env_vars['EMAIL_PASSWORD']
+to_email = env_vars['TO_EMAIL']
 
 # SMTP server configuration
 smtp_server = 'smtp.gmail.com'
@@ -48,6 +54,7 @@ def fetch_data():
         firefox_options = Options()
         firefox_options.add_argument("--headless")  # Run in headless mode
 
+        # Define path for GeckoDriver on GitHub Actions (Linux path)
         geckodriver_path = '/snap/bin/geckodriver'
         service = Service(geckodriver_path)
 
