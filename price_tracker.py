@@ -1,54 +1,73 @@
+import os
+import json
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import os
-import json
+from bs4 import BeautifulSoup
+import time
 
 # Load environment variables
 env_data = os.getenv('ENV_DATA')
 
 if env_data:
-    secrets = json.loads(env_data)
-    print("Loaded environment variables:")
-    for key, value in secrets.items():
-        print(f"{key}: {value}")
+    env_vars = json.loads(env_data)
+    print("Loaded environment variables")
 else:
-    print("ENV_DATA is not set or empty")
-    secrets = {}
+    raise ValueError("ENV_DATA is not set or empty")
 
-# Define path for GeckoDriver on GitHub Actions (Linux path)
-geckodriver_path = '/usr/local/bin/geckodriver'
+from_email = env_vars.get('FROM_EMAIL', '')
+from_password = env_vars.get('EMAIL_PASSWORD', '')
+to_email = env_vars.get('TO_EMAIL', '')
 
-# Set up Firefox options
-options = Options()
-options.add_argument('--headless')  # Uncomment if you need headless mode
+product = {
+    "url": "https://www.amazon.in/Fossil-Analog-Black-Unisex-Watch/dp/B005LBZ6G6",
+    "threshold": 141489.0
+}
 
-# Set up Firefox service
-service = Service(executable_path=geckodriver_path)
-
-# Initialize Firefox WebDriver
-driver = None  # Initialize driver to None
-
-try:
-    driver = webdriver.Firefox(service=service, options=options)
-    
-    # Open the URL
-    driver.get('https://www.amazon.in/s?k=iphone+15+pro+max')
-    
-    # Wait for an element with the class "a-size-medium a-color-base a-text-normal" to appear
+def fetch_data():
+    driver = None
     try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.a-size-medium.a-color-base.a-text-normal'))
-        )
-        print("Product element detected")
-    except Exception as e:
-        print(f"Product element not detected: {e}")
-    
-    print(driver.title)  # Print the page title to verify it loads correctly
+        firefox_options = Options()
+        firefox_options.add_argument("--headless")
 
-finally:
-    if driver:
-        driver.quit()
+        # Define path for GeckoDriver
+        geckodriver_path = '/snap/bin/geckodriver'
+        service = Service(geckodriver_path)
+
+        # Initialize the Firefox WebDriver
+        driver = webdriver.Firefox(service=service, options=firefox_options)
+        
+        delay_time = 10
+
+        driver.get(product["url"])
+        time.sleep(delay_time)
+
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'html.parser')
+
+        name_tag = soup.find('span', class_='a-size-large product-title-word-break')
+        name = name_tag.text.strip() if name_tag else 'N/A'
+        print(f"Product Name: {name}")
+
+        price_tag = soup.find('span', class_='a-price-whole')
+        price = price_tag.text.strip().replace(',', '') if price_tag else 'N/A'
+        print(f"Product Price: {price}")
+
+        if price != 'N/A':
+            price = float(price)
+            print(f"Fetched Price: {price}")
+
+            if price <= product["threshold"]:
+                print(f'Price is below threshold for {name}: {price}')
+                # Removed email functionality
+        else:
+            print("Price data not available.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        if driver:
+            driver.quit()
+
+if __name__ == "__main__":
+    fetch_data()
