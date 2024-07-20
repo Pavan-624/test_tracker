@@ -1,34 +1,50 @@
-name: Price Tracker
+name: Run Price Tracker
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Runs every hour
+  push:
+    branches:
+      - main
 
 jobs:
-  run-price-tracker:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
-        python -m venv venv
-        . venv/bin/activate
-        pip install selenium beautifulsoup4
-        pip install urllib3==1.26.16
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Set environment variables
-      env:
-        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+    - name: Install GeckoDriver
       run: |
-        . venv/bin/activate
-        python price_tracker.py
+        GECKODRIVER_VERSION=0.34.0
+        wget "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
+        tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin/
+        geckodriver --version  # Verify installation
+
+    - name: Install Firefox
+      run: sudo apt-get install -y firefox
+
+    - name: Debug information
+      run: |
+        which geckodriver
+        geckodriver --version
+        which firefox
+        firefox --version
+
+    - name: Set environment variable
+      run: echo "ENV_DATA=${{ secrets.ENV_DATA }}" >> $GITHUB_ENV
+
+    - name: Run price tracker script
+      run: python price_tracker.py
+      env:
+        ENV_DATA: ${{ secrets.ENV_DATA }}
