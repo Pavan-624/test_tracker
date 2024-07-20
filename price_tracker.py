@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 import time
 
 # Fetch secrets from environment variables
-secrets = json.loads(os.getenv('env'))
+secrets = json.loads(os.getenv('env_data'))
 
 from_email = secrets['FROM_EMAIL']
 from_password = secrets['EMAIL_PASSWORD']
