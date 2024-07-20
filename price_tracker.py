@@ -4,13 +4,15 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os
+import json
 
-# Define path for GeckoDriver
+# Define path for GeckoDriver on GitHub Actions (Linux path)
 geckodriver_path = '/usr/local/bin/geckodriver'
 
 # Set up Firefox options
 options = Options()
-# options.add_argument('--headless')  # Comment out or remove this line for non-headless mode
+# options.add_argument('--headless')  # Uncomment if you need headless mode
 
 # Set up Firefox service
 service = Service(executable_path=geckodriver_path)
